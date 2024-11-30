@@ -4,39 +4,34 @@ import by.kurilo.grapheditor.graphelements.edge.Edge;
 
 import java.util.*;
 
-public class Vertex {
-    private final String name;
-   private final List<Edge> outgoingEdges;
-   private final List<Edge> incomingEdges;
+public class Vertex<T> {
+    private final T name;
+    private final List<Edge<T>> outgoingEdges;
+    private final List<Edge<T>> incomingEdges;
 
-    public Vertex(String name) {
+    public Vertex(T name) {
         this.name = name;
         this.outgoingEdges = new ArrayList<>();
         this.incomingEdges = new ArrayList<>();
     }
 
-    public void addOutgoingEdge(Edge edge) {
+    public void addOutgoingEdge(Edge<T> edge) {
         outgoingEdges.add(edge);
     }
 
-    public void addIncomingEdge(Edge edge) {
+    public void addIncomingEdge(Edge<T> edge) {
         incomingEdges.add(edge);
     }
 
-    public List<Edge> getIncomingEdges() {
+    public List<Edge<T>> getIncomingEdges() {
         return incomingEdges;
     }
 
-    public List<Edge> getOutgoingEdges() {
+    public List<Edge<T>> getOutgoingEdges() {
         return outgoingEdges;
     }
-    public String getName()
-    {return name;}
+
+    public T getName() {
+        return name;
+    }
 }
-
-
-
-
-
-
-

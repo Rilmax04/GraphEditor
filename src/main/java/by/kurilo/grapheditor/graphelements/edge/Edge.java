@@ -2,20 +2,20 @@ package by.kurilo.grapheditor.graphelements.edge;
 
 import by.kurilo.grapheditor.graphelements.vertex.Vertex;
 
-public class Edge {
-   private Vertex from;
-   private Vertex to;
+public class Edge<T> {
+    private final Vertex<T> from;
+    private final Vertex<T> to;
 
-    public Edge(Vertex from, Vertex to) {
+    public Edge(Vertex<T> from, Vertex<T> to) {
         this.from = from;
         this.to = to;
     }
 
-    public Vertex getFrom() {
+    public Vertex<T> getFrom() {
         return from;
     }
 
-    public Vertex getTo() {
+    public Vertex<T> getTo() {
         return to;
     }
 }

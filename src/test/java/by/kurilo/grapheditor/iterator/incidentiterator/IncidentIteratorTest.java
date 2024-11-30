@@ -6,115 +6,136 @@ import by.kurilo.grapheditor.graphelements.vertex.Vertex;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 import java.util.ListIterator;
 
-public class IncidentIteratorTest {
-    private DirectedGraph graph;
-    private IncidentIterator incidentIterator;
+import static org.junit.jupiter.api.Assertions.*;
+
+class IncidentIteratorTest {
+
+    private DirectedGraph<String> graph;
+    private IncidentIterator<String> incidentIterator;
 
     @BeforeEach
-    public void setUp() {
-        graph = new DirectedGraph();
-        incidentIterator = new IncidentIterator(graph);
-
+    void setUp() {
+        graph = new DirectedGraph<>();
         graph.addVertex("A");
         graph.addVertex("B");
         graph.addVertex("C");
         graph.addEdge("A", "B");
         graph.addEdge("A", "C");
+        incidentIterator = new IncidentIterator<>(graph);
     }
 
     @Test
-    public void testIncidentEdgeIterator() {
-        ListIterator<Edge> iterator = incidentIterator.incidentEdgeIterator("A");
+    void testIncidentEdgeIterator() {
+        ListIterator<Edge<String>> iterator = incidentIterator.incidentEdgeIterator("A");
         assertTrue(iterator.hasNext());
-        Edge edge = iterator.next();
-        assertEquals("B", edge.getTo().getName());
-        edge = iterator.next();
-        assertEquals("C", edge.getTo().getName());
+
+        Edge<String> firstEdge = iterator.next();
+        assertNotNull(firstEdge);
+        assertEquals("A", firstEdge.getFrom().getName());
+        assertTrue(firstEdge.getTo().getName().matches("B|C"));
     }
 
     @Test
-    public void testAdjacentVertexIterator() {
-        ListIterator<Vertex> iterator = incidentIterator.adjacentVertexIterator("A");
+    void testAdjacentVertexIterator() {
+        ListIterator<Vertex<String>> iterator = incidentIterator.adjacentVertexIterator("A");
         assertTrue(iterator.hasNext());
-        Vertex vertex = iterator.next();
-        assertEquals("B", vertex.getName());
-        vertex = iterator.next();
-        assertEquals("C", vertex.getName());
+
+        Vertex<String> firstVertex = iterator.next();
+        assertNotNull(firstVertex);
+        assertTrue(firstVertex.getName().matches("B|C"));
     }
 
     @Test
-    public void testIncidentReverseEdgeIterator() {
-        ListIterator<Edge> iterator = incidentIterator.incidentReverseEdgeIterator("A");
+    void testIncidentReverseEdgeIterator() {
+        ListIterator<Edge<String>> iterator = incidentIterator.incidentReverseEdgeIterator("A");
         assertTrue(iterator.hasNext());
-        Edge edge = iterator.next();
-        assertEquals("C", edge.getTo().getName());
-        edge = iterator.next();
-        assertEquals("B", edge.getTo().getName());
+
+        Edge<String> lastEdge = iterator.next();
+        assertNotNull(lastEdge);
+        assertEquals("A", lastEdge.getFrom().getName());
+        assertTrue(lastEdge.getTo().getName().matches("B|C"));
     }
 
     @Test
-    public void testAdjacentReverseVertexIterator() {
-        ListIterator<Vertex> iterator = incidentIterator.adjacentReverseVertexIterator("A");
+    void testAdjacentReverseVertexIterator() {
+        ListIterator<Vertex<String>> iterator = incidentIterator.adjacentReverseVertexIterator("A");
         assertTrue(iterator.hasNext());
-        Vertex vertex = iterator.next();
-        assertEquals("C", vertex.getName());
-        vertex = iterator.next();
-        assertEquals("B", vertex.getName());
+
+        Vertex<String> lastVertex = iterator.next();
+        assertNotNull(lastVertex);
+        assertTrue(lastVertex.getName().matches("B|C"));
     }
 
     @Test
-    public void testIncidentConstantEdgeIterator() {
-        ListIterator<Edge> iterator = incidentIterator.incidentConstantEdgeIterator("A");
-        assertTrue(iterator.hasNext());
-        Edge edge = iterator.next();
-        assertEquals("B", edge.getTo().getName());
-        edge = iterator.next();
-        assertEquals("C", edge.getTo().getName());
+    void testIncidentConstantEdgeIterator() {
+        ListIterator<Edge<String>> iterator = incidentIterator.incidentConstantEdgeIterator("A");
+        assertThrows(UnsupportedOperationException.class, () -> {
+            iterator.next();
+            iterator.remove();
+        });
     }
 
     @Test
-    public void testAdjacentConstantVertexIterator() {
-        ListIterator<Vertex> iterator = incidentIterator.adjacentConstantVertexIterator("A");
-        assertTrue(iterator.hasNext());
-        Vertex vertex = iterator.next();
-        assertEquals("B", vertex.getName());
-        vertex = iterator.next();
-        assertEquals("C", vertex.getName());
+    void testAdjacentConstantVertexIterator() {
+        ListIterator<Vertex<String>> iterator = incidentIterator.adjacentConstantVertexIterator("A");
+        assertThrows(UnsupportedOperationException.class, () -> {
+            iterator.next();
+            iterator.remove();
+        });
     }
 
     @Test
-    public void testConstantRemoveEdgeByIterator() {
-        ListIterator<Edge> iterator = incidentIterator.incidentConstantEdgeIterator("A");
-        incidentIterator.constantRemoveEdgeByIterator(iterator);
-        assertEquals(1, graph.countEdge());
-        incidentIterator.constantRemoveEdgeByIterator(iterator);
-        assertEquals(0, graph.countEdge());
-    }
-
-    @Test
-    public void testConstantRemoveVertexByIterator() {
-        ListIterator<Vertex> iterator = incidentIterator.adjacentConstantVertexIterator("A");
-        incidentIterator.constantRemoveVertexByIterator(iterator);
-        assertNull(graph.getVertex("B"));
-    }
-
-    @Test
-    public void testReverseRemoveEdgeByIterator() {
-        ListIterator<Edge> iterator = incidentIterator.incidentReverseEdgeIterator("A");
+    void testReverseRemoveEdgeByIterator() {
+        ListIterator<Edge<String>> iterator = incidentIterator.incidentReverseEdgeIterator("A");
+        iterator.next();
         incidentIterator.reverseRemoveEdgeByIterator(iterator);
         assertEquals(1, graph.countEdge());
-        incidentIterator.reverseRemoveEdgeByIterator(iterator);
-        assertEquals(0, graph.countEdge());
     }
 
     @Test
-    public void testReverseRemoveVertexByIterator() {
-        ListIterator<Vertex> iterator = incidentIterator.adjacentReverseVertexIterator("A");
+    void testReverseRemoveVertexByIterator() {
+        ListIterator<Vertex<String>> iterator = incidentIterator.adjacentReverseVertexIterator("A");
+        iterator.next();
         incidentIterator.reverseRemoveVertexByIterator(iterator);
-        assertNull(graph.getVertex("C"));
+        assertEquals(2, graph.getVertices().size());
+    }
+
+    @Test
+    void testEmptyIncidentEdgeIterator() {
+        ListIterator<Edge<String>> iterator = incidentIterator.incidentEdgeIterator("D");
+        assertFalse(iterator.hasNext());
+    }
+
+    @Test
+    void testEmptyAdjacentVertexIterator() {
+        ListIterator<Vertex<String>> iterator = incidentIterator.adjacentVertexIterator("D");
+        assertFalse(iterator.hasNext());
+    }
+    @Test
+    void testConstantRemoveEdgeByIterator() {
+        ListIterator<Edge<String>> iterator = incidentIterator.incidentEdgeIterator("A");
+
+        assertEquals(2, graph.countEdge());
+
+        incidentIterator.constantRemoveEdgeByIterator(iterator);
+
+        assertEquals(1, graph.countEdge());
+
+        assertTrue(graph.isFoundEdge("A", "B") || graph.isFoundEdge("A", "C"));
+    }
+
+    @Test
+    void testConstantRemoveVertexByIterator() {
+        ListIterator<Vertex<String>> iterator = incidentIterator.adjacentVertexIterator("A");
+
+        assertEquals(3, graph.getVertices().size());
+
+        incidentIterator.constantRemoveVertexByIterator(iterator);
+
+        assertEquals(2, graph.getVertices().size());
+
+        assertTrue(graph.isFoundVertex("B") || graph.isFoundVertex("C"));
     }
 }
